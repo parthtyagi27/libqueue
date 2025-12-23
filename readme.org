@@ -1,11 +1,11 @@
 A project that looks at different multi threaded queue implementations
 
-Queue Implementations:
+* Queue Implementations:
 - RingBuffer Queue
 - std::queue
 
-  Multi-Threaded Queue Implementation:
-  Each implementation takes a template type of the container for modularity
+* Multi-Threaded Queue Implementation:
+Each implementation takes a template type of the container for modularity
 - GlobalMutex
 - Maybe some fine grained locking implementation
 - Lock Free
