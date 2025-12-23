@@ -21,12 +21,13 @@ private:
 public:
     size_t size() const {return num_elements;}
     bool empty() const {return num_elements == 0;}
+    bool full() const {return num_elements == buffer_size;}
     bool push(const T& object) {
         if (write_idx == read_idx) {
             if (num_elements == 0) {
                 // we can push
                 buffer[write_idx] = object;
-                write_idx++;
+                write_idx = (write_idx + 1) % buffer_size;
                 num_elements++;
                 return true;
             } else {
@@ -68,6 +69,8 @@ public:
             num_elements--;
         }
     }
+    size_t get_write_idx() const {return write_idx;}
+    size_t get_read_idx() const {return read_idx;}
 };
 
 }
