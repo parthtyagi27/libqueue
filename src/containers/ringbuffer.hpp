@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <optional>
 
 namespace queue_containers {
@@ -23,52 +24,34 @@ public:
     bool empty() const {return num_elements == 0;}
     bool full() const {return num_elements == buffer_size;}
     bool push(const T& object) {
-        if (write_idx == read_idx) {
-            if (num_elements == 0) {
-                // we can push
-                buffer[write_idx] = object;
-                write_idx = (write_idx + 1) % buffer_size;
-                num_elements++;
-                return true;
-            } else {
-                // can't push to queue
-                // TODO: maybe return bool to indicate success?
-                return false;
-            }
-        } else {
-            buffer[write_idx] = object;
-            write_idx = (write_idx + 1) % buffer_size;
-            num_elements++;
-            return true;
+        if (full()) {
+            return false;
         }
+        buffer[write_idx] = object;
+        if (write_idx == SIZE_MAX)
+            write_idx = 0;
+        else
+            write_idx = (write_idx + 1) % buffer_size;
+        num_elements++;
+        return true;
     }
     std::optional<T> front() {
-        if (read_idx == write_idx) {
-            if (num_elements == 0) {
-                // we don't have any elements
-                return std::nullopt;
-            } else {
-                // our indicies are the same but we have elements, what to do?
-                std::optional<T> value = buffer[read_idx];
-                return value;
-            }
-        } else {
-            std::optional<T> value = buffer[read_idx];
-            return value;
-        }
+        if (empty())
+            return std::nullopt;
+        return buffer[read_idx];
     }
-    void pop() {
-        if (read_idx == write_idx) {
-            if (num_elements > 0) {
-                // we can pop
-                read_idx = (read_idx + 1) % buffer_size;
-                num_elements--;
-            }
+    bool pop() {
+        if (empty())
+            return false;
+        if (read_idx == SIZE_MAX) {
+            read_idx = 0;
         } else {
             read_idx = (read_idx + 1) % buffer_size;
-            num_elements--;
         }
+        num_elements--;
+        return true;
     }
+    // for debugging
     size_t get_write_idx() const {return write_idx;}
     size_t get_read_idx() const {return read_idx;}
 };
